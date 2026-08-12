@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from 'react';
-import Map, { Source, Layer, FillExtrusionLayer } from 'react-map-gl';
+import Map, { Source, Layer } from 'react-map-gl/mapbox';
+import type { FillExtrusionLayer } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Read the mapbox token from env

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import ThreeGlobe from 'three-globe';
+import { useRouter } from 'next/navigation';
 
 const CITIES = [
   { name: 'Delhi', lat: 28.7041, lng: 77.1025 },
@@ -14,6 +15,7 @@ const CITIES = [
 ];
 
 function GlobeObject() {
+  const router = useRouter();
   const [globe, setGlobe] = useState<ThreeGlobe | null>(null);
 
   useEffect(() => {
@@ -33,8 +35,12 @@ function GlobeObject() {
     globeMaterial.emissiveIntensity = 0.5;
     globeMaterial.shininess = 0.7;
 
+    (g as any).onPointClick((point: any) => {
+      router.push(`/dashboard?city=${encodeURIComponent(point.name)}`);
+    });
+
     setGlobe(g);
-  }, []);
+  }, [router]);
 
   // Return the primitive containing the three-globe instance
   return globe ? <primitive object={globe} /> : null;
