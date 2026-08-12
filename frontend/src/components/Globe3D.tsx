@@ -19,8 +19,9 @@ function GlobeObject() {
   const [globe, setGlobe] = useState<ThreeGlobe | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
     const g = new ThreeGlobe()
-      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
       .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
       .pointsData(CITIES)
       .pointAltitude(0.02)
@@ -28,32 +29,44 @@ function GlobeObject() {
       .pointRadius(0.6)
       .pointResolution(32);
 
-    // We can add a red/warm glow using standard material properties
     const globeMaterial = g.globeMaterial() as any;
-    globeMaterial.color.set('#333333');
-    globeMaterial.emissive.set('#220000');
-    globeMaterial.emissiveIntensity = 0.5;
-    globeMaterial.shininess = 0.7;
+    globeMaterial.color.set('#ffffff');
+    globeMaterial.emissive.set('#111111');
+    globeMaterial.emissiveIntensity = 0.2;
+    globeMaterial.shininess = 0.9;
 
-    (g as any).onPointClick((point: any) => {
-      router.push(`/dashboard?city=${encodeURIComponent(point.name)}`);
-    });
-
-    setGlobe(g);
+    if (isMounted) {
+      setGlobe(g);
+    }
+    
+    return () => {
+      isMounted = false;
+      // Ideally dispose WebGL resources here if possible
+    };
   }, [router]);
 
-  // Return the primitive containing the three-globe instance
-  return globe ? <primitive object={globe} /> : null;
+  return globe ? (
+    <primitive 
+      object={globe} 
+      onClick={(e: any) => {
+        e.stopPropagation();
+        // three-globe attaches the original data to the mesh's __data property
+        const data = e.object.__data;
+        if (data && data.name) {
+          router.push(`/dashboard?city=${encodeURIComponent(data.name)}`);
+        }
+      }}
+    />
+  ) : null;
 }
 
 export default function Globe3D() {
   return (
-    <div className="w-full h-full bg-slate-950">
+    <div className="w-full h-full bg-slate-50">
       <Canvas camera={{ position: [50, 40, 100], fov: 45 }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 10]} intensity={1.5} color="#ffedd5" /> 
-        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#ef4444" />
-        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[10, 20, 30]} intensity={2.5} color="#ffffff" /> 
+        <pointLight position={[-10, -10, -10]} intensity={1.0} color="#ef4444" />
         <GlobeObject />
         {/* Rotate and focus towards India (Approx Lat 20, Lon 78) */}
         <OrbitControls 
