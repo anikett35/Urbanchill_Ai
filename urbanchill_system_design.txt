@@ -1,0 +1,1377 @@
+CHAPTER 1
+INTRODUCTION & PROJECT OVERVIEW
+1.1 Project Title
+UrbanChill AI: A Geo-Intelligent Digital Twin Platform for Urban Heat Resilience
+
+1.1 Proposed Solution
+UrbanChill AI proposes a comprehensive Geo-Intelligent Digital Twin Platform capable of monitoring, analyzing, and predicting urban heat conditions.
+The platform combines satellite imagery, GIS technologies, spatial databases, and machine learning into a single interactive application.
+The workflow begins with a realistic 3D Earth visualization where users can explore the globe and select any city. Once a city is selected, the platform retrieves satellite imagery, calculates Land Surface Temperature (LST) and NDVI, performs spatial analysis, predicts heat-risk levels using machine learning, and presents results through an interactive planning dashboard.
+The system further enables planners to simulate urban cooling strategies, compare environmental indicators, and generate analytical reports for informed decision-making.
+The proposed platform shifts urban heat management from reactive observation toward proactive planning.
+
+1.2 Scope of the Project
+The scope of UrbanChill AI includes:
+Included
+Interactive 3D Earth visualization.
+Global city search and navigation.
+Satellite image processing.
+Land Surface Temperature analysis.
+NDVI calculation.
+Heat hotspot detection.
+GIS visualization.
+Heat-risk prediction.
+Interactive dashboard.
+Spatial database management.
+Report generation.
+Deployment as a cloud-based web application.
+
+1.3 Expected Outcome
+The final system will provide a modern web-based platform capable of:
+Displaying a realistic rotating 3D Earth.
+Allowing users to navigate seamlessly to any city.
+Processing satellite imagery automatically.
+Identifying urban heat hotspots.
+Calculating environmental indicators.
+Predicting heat-risk levels.
+Supporting planners through interactive spatial analysis.
+Generating professional reports for urban planning.
+The completed system will demonstrate the integration of GIS, remote sensing, machine learning, cloud computing, and interactive visualization into a unified urban planning platform.
+
+1.4 Target Users
+The primary users of UrbanChill AI include:
+Urban planners
+Municipal corporations
+Smart city authorities
+Environmental agencies
+Government organizations
+Climate researchers
+GIS professionals
+Academic researchers
+University students
+
+
+
+
+
+
+
+
+
+CHAPTER 2
+TECHNOLOGY STACK & SYSTEM DESIGN
+
+2.1 Overall Technology Stack
+Category
+Technology
+Frontend
+React + TypeScript
+UI Framework
+Tailwind CSS + Shadcn UI
+3D Visualization
+CesiumJS
+Backend
+FastAPI
+Programming Language
+Python
+Satellite Data
+Google Earth Engine
+Spatial Processing
+GeoPandas, Rasterio, Shapely, Rioxarray, GDAL
+Database
+PostgreSQL + PostGIS
+Machine Learning
+Scikit-learn
+ML Model
+Random Forest
+Model Storage
+Joblib
+Charts
+Recharts
+API Communication
+Axios
+State Management
+React Query
+Report Generation
+ReportLab
+Frontend Deployment
+Vercel
+Backend Deployment
+Render
+
+2.2 Frontend Technologies
+React
+Purpose
+Develop the complete user interface.
+Why React?
+Component-based architecture.
+Fast rendering using Virtual DOM.
+Large developer community.
+Easy maintenance.
+Industry-standard frontend framework.
+
+2.4 Why CesiumJS?
+CesiumJS is the core visualization engine of UrbanChill AI.
+Unlike traditional mapping libraries, CesiumJS renders a realistic 3D globe that enables users to explore the Earth from space before navigating to individual cities.
+Why CesiumJS was Selected
+Realistic 3D Earth.
+Smooth camera fly animations.
+Terrain visualization.
+Global-scale rendering.
+High-performance WebGL rendering.
+Supports GeoJSON, imagery layers, and terrain.
+Suitable for Digital Twin applications.
+Responsibilities
+Display rotating Earth.
+Search and navigate cities.
+Camera fly animation.
+Display GIS layers.
+Display buildings.
+Display heatmap overlays.
+Display NDVI layers.
+
+2.6 Backend Technology
+FastAPI
+Responsibilities
+Receive city requests.
+Process analysis requests.
+Connect to Google Earth Engine.
+Run machine learning models.
+Return processed results.
+2.7 Google Earth Engine
+Purpose
+Satellite image processing.
+Google Earth Engine provides cloud-based access to petabytes of satellite imagery without requiring local storage.
+Datasets Used
+Landsat-8
+Sentinel-2
+Used For
+Land Surface Temperature (LST)
+NDVI
+Satellite imagery
+Region clipping
+Cloud masking
+2.8 Spatial Processing Libraries
+GeoPandas
+Purpose
+Vector data processing.
+Used For
+Administrative boundaries.
+Roads.
+Buildings.
+Parks.
+Spatial joins.
+Rasterio
+Purpose
+Raster processing.
+Used For
+Reading GeoTIFF files.
+Raster calculations.
+Image transformations.
+
+
+Rioxarray
+Purpose
+Large raster handling.
+Used For
+Raster clipping.
+Coordinate transformations.
+Shapely
+Purpose
+Geometry operations.
+Used For
+Buffer analysis.
+Polygon operations.
+Distance calculations.
+GDAL
+Purpose
+Geospatial data conversion.
+Used For
+Format conversion.
+Coordinate transformations.
+Raster processing.
+
+2.9 Database
+PostgreSQL
+Purpose
+Store application data.
+Stores
+Users
+Analysis history
+Reports
+Metadata
+
+
+PostGIS
+Purpose
+Spatial database extension.
+Stores
+Buildings
+Roads
+Parks
+Water bodies
+Administrative boundaries
+
+2.10 Machine Learning
+Scikit-learn
+Purpose
+Machine Learning framework.
+Responsibilities
+Data preprocessing.
+Feature engineering.
+Model training.
+Model evaluation.
+
+Random Forest
+Purpose
+Predict heat-risk levels.
+Input Features
+Land Surface Temperature
+NDVI
+Building Density
+Population Density
+Road Density
+Green Cover
+Distance to Water Bodies (optional)
+Elevation (optional)
+2.11 Data Flow
+The complete data flow of UrbanChill AI is shown below.
+User opens application
+↓
+Rotating Earth appears
+↓
+User searches or clicks a city
+↓
+CesiumJS sends city coordinates
+↓
+FastAPI receives request
+↓
+Google Earth Engine retrieves satellite imagery
+↓
+Satellite data is processed
+↓
+Land Surface Temperature calculated
+↓
+NDVI calculated
+↓
+Spatial features extracted
+↓
+Random Forest predicts heat risk
+↓
+Results stored in PostgreSQL
+↓
+Dashboard updated
+↓
+User interacts with layers and analytics
+
+
+
+CHAPTER 3
+SYSTEM ARCHITECTURE & PROJECT WORKFLOW
+
+3.1 Introduction
+UrbanChill AI is designed as a modular, scalable, and cloud-based Geo-Intelligent Digital Twin Platform. Instead of combining all functionalities into a single application layer, the system is divided into multiple independent modules. Each module performs a specific task such as satellite image retrieval, spatial processing, machine learning, or report generation.
+This modular architecture improves maintainability, scalability, and allows different team members to work independently.
+
+3.2 Overall System Architecture
+
+
+
+3.3 Architecture Layers
+The application follows a five-layer architecture.
+
+Layer 1 – Presentation Layer
+Responsible for user interaction.
+Components:
+React
+TypeScript
+Tailwind CSS
+Shadcn UI
+CesiumJS
+Responsibilities:
+Display rotating Earth
+Search cities
+Show dashboard
+Display analytics
+Layer controls
+Report download
+
+Layer 2 – Application Layer
+Responsible for business logic.
+Technology:
+FastAPI
+Responsibilities:
+API management
+Authentication (future)
+Request validation
+Communication with GIS and ML modules
+Data formatting
+Layer 3 – GIS Processing Layer
+Responsible for satellite data analysis.
+Technologies:
+Google Earth Engine
+Rasterio
+GeoPandas
+GDAL
+Shapely
+Rioxarray
+Responsibilities:
+Retrieve satellite imagery
+Cloud masking
+Region clipping
+Calculate LST
+Calculate NDVI
+Generate heat maps
+Prepare GIS layers
+Layer 4 – Machine Learning Layer
+Technology:
+Scikit-learn
+Random Forest
+Joblib
+Responsibilities:
+Load trained model
+Feature extraction
+Heat-risk prediction
+Prediction confidence
+
+Layer 5 – Data Layer
+Technology:
+PostgreSQL
+PostGIS
+Stores:
+User data
+Analysis history
+Spatial datasets
+Generated reports
+City metadata
+
+3.4 User Workflow
+The user journey begins with an immersive globe and ends with detailed urban heat analysis.
+
+3.5 Landing Page Workflow
+When users first open the application, they should experience a modern, immersive interface rather than a traditional dashboard.
+Interface Elements
+Space background
+Rotating Earth
+Atmospheric lighting
+Search bar
+Project title
+Start Analysis button (optional)
+The user can:
+Rotate the globe
+Zoom
+Search any city
+Click directly on the globe
+No dashboard is displayed initially.
+
+3.6 City Selection Workflow
+The user has two options:
+Option 1 : Search for a city.
+Example:
+Search
+↓
+Pune
+↓
+Camera Fly
+Option 2
+Rotate Earth
+↓
+Click City
+↓
+Camera Fly
+
+3.7 Camera Fly Animation
+Instead of loading a new page, CesiumJS performs a smooth camera animation.
+Example:
+Earth
+↓
+Asia
+↓
+India
+↓
+Maharashtra
+↓
+Pune
+↓
+City View
+
+3.8 Dashboard Loading
+Once the camera reaches the city:
+The dashboard slides into view.
+---------------------------------------------------------
+ Layers      |         3D City View       | Analytics
+---------------------------------------------------------
+ Heat         |                           | Temperature
+ NDVI       |                           | NDVI
+ Buildings |  CesiumJS Map | Heat Risk
+ Roads       |                           | Reports
+ Parks        |                           | Simulation
+---------------------------------------------------------
+The dashboard remains synchronized with the map.
+
+
+
+
+3.9 Backend Processing Workflow
+After city selection:
+City Coordinates
+↓
+FastAPI
+↓
+Google Earth Engine
+↓
+Satellite Images
+↓
+Cloud Removal
+↓
+Clip Study Area
+↓
+LST
+↓
+NDVI
+↓
+Spatial Analysis
+↓
+Random Forest
+↓
+Results
+↓
+Frontend
+
+3.10 GIS Processing Workflow
+Region Selected
+↓
+Landsat-8
+↓
+Sentinel-2
+↓
+Satellite Bands
+↓
+Cloud Mask
+↓
+Clip ROI
+↓
+Calculate NDVI
+↓
+Calculate LST
+↓
+Export Results
+Output:
+Temperature raster
+Vegetation raster
+Heat map
+Spatial layers
+
+3.11 Machine Learning Workflow
+Processed GIS Data
+↓
+Feature Extraction
+↓
+Random Forest Model
+↓
+Heat Risk Prediction
+↓
+Prediction Score
+↓
+Dashboard
+Input Features:
+Land Surface Temperature
+NDVI
+Building Density
+Road Density
+Population Density
+Green Cover
+Output:
+Low Risk
+Medium Risk
+High Risk
+3.12 Report Generation Workflow
+Dashboard
+↓
+Generate Report
+↓
+Backend
+↓
+Charts
+↓
+Maps
+↓
+Statistics
+↓
+PDF Report
+↓
+Download
+The generated report includes:
+Heat map
+NDVI map
+Heat-risk classification
+Key statistics
+Planning recommendations
+Date and location
+3.14 Module Responsibilities
+Frontend Module
+Responsibilities:
+User interface
+Cesium globe
+Dashboard
+Charts
+Layer controls
+
+
+Backend Module
+Responsibilities:
+APIs
+Request handling
+Data validation
+Service orchestration
+
+GIS Module
+Responsibilities:
+Satellite processing
+LST
+NDVI
+Spatial analysis
+
+Machine Learning Module
+Responsibilities:
+Heat-risk prediction
+Model loading
+Feature processing
+
+
+
+Database Module
+Responsibilities:
+Store users
+Store analyses
+Store spatial metadata
+Store reports
+3.15 Proposed Advanced Features
+Feature 1: Historical Time Slider
+Objective
+Allow users to compare urban heat conditions over different years.
+Description
+Users can move a timeline slider to visualize historical changes in:
+Land Surface Temperature (LST)
+NDVI
+Urban Expansion
+Green Cover
+Built-up Areas
+Example:
+2018 ─────────●──────── 2026
+As the slider moves, the map updates automatically.
+Technologies Used
+Google Earth Engine
+CesiumJS
+React
+Feature 2: Multi-Layer GIS Visualization
+Objective
+Enable planners to visualize multiple environmental datasets simultaneously.
+Available Layers
+Land Surface Temperature
+NDVI
+Buildings
+Roads
+Parks
+Water Bodies
+Population Density
+Administrative Boundaries
+Heat Risk Zones
+Users can enable or disable each layer independently.
+Technologies Used
+CesiumJS
+GeoJSON
+PostGIS
+Feature 3: Interactive Heat Analysis
+Objective
+Provide detailed information for any selected location.
+Description
+When a user clicks any point on the map, the system displays:
+Temperature
+NDVI
+Heat Risk Level
+Building Density
+Green Cover Percentage
+Population Density
+This provides localized environmental analysis without requiring additional searches.
+Feature 4: Heat-Risk Prediction
+Objective
+Predict the severity of urban heat for the selected region.
+Input Parameters
+Land Surface Temperature
+NDVI
+Building Density
+Road Density
+Population Density
+Green Cover
+Technology
+Scikit-learn
+Random Forest
+Output
+Low Risk
+Medium Risk
+High Risk
+The predicted heat-risk layer is displayed directly on the map.
+
+Feature 5: What-If Simulation
+Objective
+Evaluate the impact of proposed cooling interventions.
+Simulation Options
+Increase tree plantation
+Add urban parks
+Install cool roofs
+Increase green cover
+Expand water bodies
+The system recalculates environmental indicators after each simulation.
+Output
+Estimated temperature reduction
+Updated heat-risk level
+Estimated increase in vegetation
+Comparison before and after intervention
+
+Feature 6: Comparative City Analysis
+Objective
+Compare environmental conditions between two cities.
+Example
+Pune vs Hyderabad
+The dashboard compares:
+Average LST
+NDVI
+Green Cover
+Building Density
+Heat Risk
+This helps planners evaluate urban planning strategies across cities.
+
+Feature 7: Spatial Analytics Dashboard
+The dashboard displays:
+Average Temperature
+Maximum Temperature
+Minimum Temperature
+Average NDVI
+Green Cover Percentage
+Built-up Area Percentage
+Heat-Risk Distribution
+Charts update automatically when the selected city changes.
+Technologies Used
+Recharts
+React
+FastAPI
+
+Feature 8: PDF Report Generation
+Generate a professional report containing:
+Selected City
+Date of Analysis
+Heat Map
+NDVI Map
+Heat-Risk Classification
+Environmental Statistics
+Suggested Mitigation Measures
+The report can be downloaded for planning and documentation purposes.
+Technology : ReportLab
+Feature 9: Saved Analysis History
+Users can save completed analyses for future comparison.
+Stored Information
+City
+Date
+Heat Map
+NDVI
+Heat Risk
+Report
+Technology
+PostgreSQL
+PostGIS
+
+Feature 10: Responsive Dashboard
+The dashboard is fully responsive and optimized for:
+Desktop
+Laptop
+Tablet
+All maps, charts, and panels automatically adjust based on screen size.
+
+Feature 11: Real-Time Layer Controls
+Users can dynamically switch between map layers without reloading the application.
+Supported Layers
+Satellite Imagery
+Terrain
+Heat Map
+NDVI
+Buildings
+Roads
+Water Bodies
+Parks
+Population Density
+This improves usability and allows planners to focus on specific datasets.
+
+Feature 12: Enterprise-Style User Experience
+UrbanChill AI is designed to provide a seamless workflow:
+Open the application.
+Explore the rotating 3D Earth.
+Search or click a city.
+Experience a smooth camera fly-to animation.
+Watch the Urban Intelligence Workspace appear.
+View heat maps, NDVI, analytics, and predictions.
+Simulate mitigation strategies.
+Export reports for planning and decision-making.
+This workflow offers a modern, intuitive, and immersive experience suitable for professional GIS applications.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CHAPTER 4
+USER INTERFACE (UI/UX) DESIGN & USER WORKFLOW
+
+4.1 Introduction
+The User Interface (UI) of UrbanChill AI is designed to provide an immersive and intuitive experience for urban planners, researchers, and environmental analysts. Unlike conventional GIS applications that open directly to a static map, UrbanChill AI begins with an interactive 3D Earth, allowing users to navigate naturally from a global view to city-level analysis.
+The design follows the principles of simplicity, responsiveness, consistency, and accessibility while maintaining a professional enterprise-style appearance.
+
+4.2 UI Design Objectives
+The interface is designed to:
+Provide an engaging first impression.
+Simplify city selection and navigation.
+Present complex spatial information in an easy-to-understand manner.
+Minimize user interaction steps.
+Support interactive exploration of environmental data.
+Deliver a responsive experience across devices.
+
+4.3 Complete User Journey
+The complete user workflow is illustrated below.
+Open Website
+      │
+      ▼
+Landing Page
+      │
+      ▼
+3D Rotating Earth
+      │
+      ▼
+Search or Click City
+      │
+      ▼
+Camera Fly Animation
+      │
+      ▼
+Urban Intelligence Workspace Opens
+      │
+      ▼
+Satellite Analysis Starts
+      │
+      ▼
+Heat Layers & Analytics Displayed
+      │
+      ▼
+User Explores Layers
+      │
+      ▼
+Run Simulation
+      │
+      ▼
+Export Report
+
+4.4 Landing Page Design
+The landing page is the first screen users interact with.
+Purpose
+Provide an immersive introduction while allowing users to immediately begin exploring the Earth.
+Components
+Space background
+Rotating 3D Earth
+Project title
+Project description
+Search bar
+Navigation menu
+
+Example Layout:
+
+Technologies Used
+React
+CesiumJS
+Tailwind CSS
+
+4.5 Earth Interaction
+Users can directly interact with the Earth.
+Supported interactions include:
+Rotate globe
+Zoom in
+Zoom out
+Pan
+Search cities
+Click any city
+The Earth continues rotating slowly until the user interacts with it.
+
+4.6 City Search
+Users may search for any city using the search bar.
+
+
+Workflow
+Enter City Name
+↓
+Search Suggestions
+↓
+Select City
+↓
+Camera Fly Animation
+The selected city's geographic coordinates are sent to the backend for analysis.
+
+4.7 Camera Fly Animation
+Rather than opening a new page, the camera smoothly transitions from space to the selected city.
+Example
+Earth
+↓
+Asia
+↓
+India
+↓
+State
+↓
+City
+↓
+3D City View
+This creates a seamless navigation experience similar to professional digital globe applications.
+
+4.8 Urban Intelligence Workspace
+After reaching the selected city, the dashboard appears.
+The layout consists of three sections.
+
+
+
+Left Sidebar
+Purpose
+Layer management and tools.
+Modules
+Heat Map
+NDVI
+Buildings
+Roads
+Parks
+Water Bodies
+Population Density
+Heat Risk
+Time Slider
+Simulation
+Reports
+
+Center Panel
+Displays the interactive Cesium map.
+Features
+Satellite imagery
+Terrain
+Buildings
+Heatmap
+NDVI
+Administrative boundaries
+Camera controls
+
+Right Sidebar
+Displays analytics.
+Information shown
+Selected City
+Average Temperature
+Maximum Temperature
+NDVI
+Green Cover
+Building Density
+Heat Risk
+Analysis Summary
+
+4.9 Dashboard Layout
+---------------------------------------------------------------
+|                         Navigation Bar                       |
+---------------------------------------------------------------
+| Layers |                                         | Analytics |
+|        |                                                |           |
+| Heat   |                                         | Avg Temp   |
+| NDVI  |                                        | Max Temp  |
+| Roads  |       CesiumJS Viewer     | NDVI         |
+| Parks  |                                         | Heat Risk |
+| Water  |                                         | Reports   |
+| Time   |                                         | Summary   |
+---------------------------------------------------------------
+
+4.10 Layer Controls
+Users can enable or disable individual layers.
+Available Layers
+Satellite
+Terrain
+Buildings
+Roads
+Parks
+Water Bodies
+NDVI
+Heat Map
+Heat Risk
+Population Density
+Multiple layers can be displayed simultaneously.
+
+4.11 Historical Time Slider
+The time slider allows comparison of environmental conditions across different years.
+Example
+2018 ────────●──────── 2026
+Updating the slider refreshes:
+LST
+NDVI
+Heat Map
+Built-up Areas
+This helps analyze long-term urban development.
+
+4.12 Interactive Map Analysis
+Users may click any point on the map.
+A popup displays:
+Latitude
+Longitude
+Temperature
+NDVI
+Heat Risk
+Building Density
+Green Cover
+This enables localized environmental analysis.
+
+4.13 Heat Analysis Panel
+The analytics panel presents processed environmental information.
+Displayed Metrics
+Average Temperature
+Maximum Temperature
+Minimum Temperature
+Average NDVI
+Green Cover
+Built-up Area
+Heat Risk
+Population Density
+Values update automatically when a new city is selected.
+
+4.14 Simulation Interface
+The simulation module allows planners to evaluate proposed mitigation measures.
+Available Simulations
+Add Trees
+Increase Green Cover
+Install Cool Roofs
+Add Parks
+Expand Water Bodies
+The system recalculates projected environmental indicators after each simulation.
+
+4.15 Comparative Analysis
+
+4.16 Report Generation
+Users can export analysis results as a PDF report.
+The report includes:
+Selected City
+Satellite Image
+Heat Map
+NDVI Map
+Environmental Statistics
+Heat-Risk Classification
+Simulation Results
+Recommendations
+
+4.17 Responsive Design
+The interface is optimized for:
+Desktop
+Laptop
+Tablet
+Responsive design ensures that all maps, charts, and controls remain accessible across supported devices.
+
+4.18 UI Design Principles
+UrbanChill AI follows these principles:
+Simple navigation
+Minimal learning curve
+Consistent design language
+Responsive layouts
+Interactive visualization
+Fast user feedback
+Professional enterprise appearance
+
+
+
+
+
+
+
+
+CHAPTER 5
+FEATURE IMPLEMENTATION
+
+5.1 Introduction
+This chapter provides a brief overview of how each feature of UrbanChill AI will be implemented. It explains the implementation approach, technologies involved, and expected outputs.
+
+5.2 Historical Time Slider
+Implementation
+The historical time slider allows users to compare environmental conditions across different years. When the selected year changes, a request is sent to the backend, which retrieves satellite imagery from Google Earth Engine. The system recalculates LST and NDVI for the selected year and updates the CesiumJS map and dashboard.
+Technologies
+React
+CesiumJS
+FastAPI
+Google Earth Engine
+Output
+Historical Heat Map
+Historical NDVI
+Updated Analytics
+
+5.3 Multi-Layer GIS Visualization
+Implementation
+The application displays multiple GIS layers that users can enable or disable independently. Each layer is loaded dynamically from the backend and rendered on the CesiumJS globe.
+Layers
+Heat Map
+NDVI
+Buildings
+Roads
+Parks
+Water Bodies
+Population Density
+Technologies
+CesiumJS
+GeoJSON
+PostGIS
+
+5.4 Interactive Heat Analysis
+Implementation
+Users can click any location on the map to view detailed environmental information. The backend retrieves the spatial attributes for the selected location and displays them in a popup.
+Displayed Information
+Temperature
+NDVI
+Heat Risk
+Building Density
+Green Cover
+Population Density
+
+5.5 Heat-Risk Prediction
+Implementation
+The backend extracts environmental features and passes them to a trained Random Forest model. The model predicts the heat-risk level, and the result is displayed on the dashboard.
+Input
+LST
+NDVI
+Building Density
+Road Density
+Population Density
+Green Cover
+Output
+Low Risk
+Medium Risk
+High Risk
+Technologies
+Scikit-learn
+Random Forest
+Joblib
+
+5.6 What-If Simulation
+Implementation
+Users can simulate urban cooling strategies such as increasing tree cover or adding cool roofs. The system recalculates the estimated environmental impact and updates the visualizations.
+Simulation Options
+Tree Plantation
+Urban Parks
+Cool Roofs
+Green Cover
+Water Bodies
+Output
+Estimated Temperature Reduction
+Updated Heat Risk
+Comparison Results
+
+5.7 Comparative City Analysis
+Implementation
+Users can compare environmental conditions between two selected cities. The dashboard displays key indicators side by side to support comparative analysis.
+Comparison Parameters
+Average Temperature
+NDVI
+Green Cover
+Building Density
+Heat Risk
+
+5.8 Spatial Analytics Dashboard
+Implementation
+The dashboard presents important environmental statistics using interactive charts and summary cards. Data is updated automatically whenever a new city is analyzed.
+Dashboard Metrics
+Average Temperature
+Maximum Temperature
+Minimum Temperature
+Average NDVI
+Green Cover
+Built-up Area
+Heat-Risk Distribution
+Technologies
+React
+Recharts
+FastAPI
+
+5.9 PDF Report Generation
+Implementation
+The system generates a downloadable PDF report containing the analysis results, maps, and key statistics for the selected city.
+Report Includes
+City Information
+Heat Map
+NDVI Map
+Heat-Risk Classification
+Environmental Statistics
+Simulation Results
+Technology
+ReportLab
+
+5.10 Saved Analysis History
+Implementation
+The system stores previous analyses in the PostgreSQL database, allowing users to review earlier results without rerunning the analysis.
+Stored Data
+City Name
+Analysis Date
+LST
+NDVI
+Heat Risk
+Report Reference
+Technologies
+PostgreSQL
+PostGIS
+
+5.11 Responsive Dashboard
+Implementation
+The interface adapts automatically to different screen sizes while maintaining usability and readability.
+Supported Devices
+Desktop
+Laptop
+Tablet
+
+5.12 Real-Time Layer Controls
+Implementation
+Users can dynamically show or hide map layers without refreshing the application. Layer visibility is managed directly within the CesiumJS viewer.
+Supported Layers
+Satellite Imagery
+Terrain
+Heat Map
+NDVI
+Buildings
+Roads
+Parks
+Water Bodies
+Population Density
+
+5.13 Enterprise-Style User Experience
+Implementation Workflow
+Open Website
+      │
+      ▼
+Rotating 3D Earth
+      │
+      ▼
+Search or Select City
+      │
+      ▼
+Camera Fly Animation
+      │
+      ▼
+Satellite Analysis
+      │
+      ▼
+Heat Maps & Analytics
+      │
+      ▼
+Run Simulations
+      │
+      ▼
+Download Report
+This workflow provides an intuitive and professional user experience while supporting effective urban heat analysis.
+
+
+
+
+
+CHAPTER 6
+Database Design
+6.1 Introduction
+UrbanChill AI uses PostgreSQL with the PostGIS extension to store spatial and application data. PostGIS enables efficient storage and querying of geographic information such as city boundaries, analysis results, and spatial layers.
+
+6.2 Database Technologies
+PostgreSQL 
+PostGIS 
+
+6.3 Database Tables
+Table
+Purpose
+Users
+Store user information
+Cities
+Store city details and coordinates
+Analysis
+Store heat analysis results
+Reports
+Store generated report metadata
+
+6.4 Stored Data
+City Name 
+Latitude & Longitude 
+Analysis Date 
+LST 
+NDVI 
+Heat Risk 
+Report Path 
+
+
+
+
+
+
+CHAPTER 7
+API Design & Backend Services
+7.1 Introduction
+The backend is developed using FastAPI, which provides REST APIs for communication between the frontend, machine learning model, database, and Google Earth Engine.
+
+7.2 API Workflow
+React Dashboard
+        │
+        ▼
+FastAPI
+        │
+ ┌──────┼───────┐
+ ▼      ▼       ▼
+GEE     ML   PostgreSQL
+
+7.3 Main APIs
+API
+Method
+Purpose
+/analyze
+POST
+Analyze selected city
+/heatmap
+GET
+Return heat map
+/ndvi
+GET
+Return NDVI layer
+/prediction
+GET
+Predict heat risk
+/timeline
+GET
+Historical analysis
+/report
+POST
+Generate PDF report
+
+7.4 Advantages
+High performance 
+Easy integration with Python 
+Automatic API documentation 
+Scalable architecture 
+
+CHAPTER 8
+Machine Learning Pipeline
+8.1 Introduction
+UrbanChill AI uses a Random Forest model to predict the heat-risk level of urban regions using environmental and spatial features.
+
+8.2 Dataset Features
+Land Surface Temperature (LST) 
+NDVI 
+Building Density 
+Road Density 
+Population Density 
+Green Cover 
+
+8.3 Workflow
+Dataset
+      │
+      ▼
+Preprocessing
+      │
+      ▼
+Feature Engineering
+      │
+      ▼
+Random Forest Training
+      │
+      ▼
+Model Saved (Joblib)
+      │
+      ▼
+Prediction
+
+8.4 Output
+The model classifies areas into:
+Low Risk 
+Medium Risk 
+High Risk 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CHAPTER 8
+Machine Learning Pipeline
+8.1 Introduction
+UrbanChill AI uses a Random Forest model to predict the heat-risk level of urban regions using environmental and spatial features.
+8.2 Dataset Features
+Land Surface Temperature (LST) 
+NDVI 
+Building Density 
+Road Density 
+Population Density 
+Green Cover 
+8.3 Workflow
+Dataset
+      │
+      ▼
+Preprocessing
+      │
+      ▼
+Feature Engineering
+      │
+      ▼
+Random Forest Training
+      │
+      ▼
+Model Saved (Joblib)
+      │
+      ▼
+Prediction
+
+Output
+The model classifies areas into: Low Risk, Medium Risk, High Risk 
+
+CHAPTER 9
+Google Earth Engine & GIS Processing
+9.1 Introduction
+Google Earth Engine (GEE) is used to access and process satellite imagery in the cloud. It provides historical and current Earth observation data required for environmental analysis.
+9.2 Satellite Datasets
+Landsat-8 
+Sentinel-2 
+9.3 Processing Workflow
+
+9.4 Outputs
+Land Surface Temperature (LST) 
+NDVI 
+Heat Map 
+Vegetation Map 
+Spatial Layers 
+

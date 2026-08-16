@@ -128,3 +128,33 @@
     @apply font-sans;
   }
 }
+
+@keyframes globeRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-globe-rotate {
+  animation: globeRotate 32s linear infinite;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-globe-rotate {
+    animation: none;
+  }
+}
