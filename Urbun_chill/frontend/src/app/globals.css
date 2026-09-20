@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-primary: var(--uc-primary);
+  --color-primary-deep: var(--uc-primary-deep);
+  --color-primary-mild: var(--uc-primary-mild);
+  --color-primary-subtle: var(--uc-primary-subtle);
+
+  --color-success: #10b981;
+  --color-success-subtle: #10b9811a;
+  --color-error: #ff6a55;
+  --color-error-subtle: #ff6a551a;
+  --color-warning: #f59e0b;
+  --color-warning-subtle: #f59e0b1a;
+
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+  --color-gray-950: #0a0a0a;
+
+  --color-background: var(--uc-background);
+  --color-foreground: var(--uc-foreground);
+  --color-card: var(--uc-card);
+  --color-card-foreground: var(--uc-card-foreground);
+  --color-muted: var(--uc-muted);
+  --color-muted-foreground: var(--uc-muted-foreground);
+  --color-border: var(--uc-border);
+  --color-input: var(--uc-input);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --radius: 0.625rem;
+}
+
+:root {
+  --uc-primary: #fb732c;
+  --uc-primary-deep: #cc5c24;
+  --uc-primary-mild: #fc8f56;
+  --uc-primary-subtle: #fb732c1a;
+
+  --uc-background: #f5f5f5;
+  --uc-foreground: #171717;
+  --uc-card: #ffffff;
+  --uc-card-foreground: #171717;
+  --uc-muted: #f5f5f5;
+  --uc-muted-foreground: #737373;
+  --uc-border: #e5e5e5;
+  --uc-input: #f5f5f5;
+}
+
+.dark {
+  --uc-primary: #fb732c;
+  --uc-primary-deep: #cc5c24;
+  --uc-primary-mild: #fc8f56;
+  --uc-primary-subtle: #fb732c1a;
+
+  --uc-background: #0a0a0a;
+  --uc-foreground: #f5f5f5;
+  --uc-card: #262626;
+  --uc-card-foreground: #f5f5f5;
+  --uc-muted: #262626;
+  --uc-muted-foreground: #a3a3a3;
+  --uc-border: #404040;
+  --uc-input: #404040;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal;
+  }
+  html {
+    @apply font-sans antialiased;
+  }
+  h1, h2, h3 {
+    @apply text-gray-900 dark:text-gray-100 font-bold;
+  }
+}

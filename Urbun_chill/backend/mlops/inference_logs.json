@@ -1,0 +1,86 @@
+[
+  {
+    "timestamp": "2026-09-20T12:09:07.689704+00:00",
+    "inputs": {
+      "lst": 36.8,
+      "ndvi": 0.28,
+      "building_density": 0.62,
+      "road_density": 9.9,
+      "population_density": 9400,
+      "green_cover": 0.22,
+      "dist_water_body": 950.0
+    },
+    "prediction": "High",
+    "confidence": 0.7063
+  },
+  {
+    "timestamp": "2026-09-20T12:10:51.191699+00:00",
+    "inputs": {
+      "lst": 36.8,
+      "ndvi": 0.28,
+      "building_density": 0.62,
+      "road_density": 9.9,
+      "population_density": 9400,
+      "green_cover": 0.22,
+      "dist_water_body": 950.0
+    },
+    "prediction": "High",
+    "confidence": 0.7063
+  },
+  {
+    "timestamp": "2026-09-20T12:10:51.408523+00:00",
+    "inputs": {
+      "lst": 41.5,
+      "ndvi": 0.15,
+      "building_density": 0.8,
+      "road_density": 16.0,
+      "population_density": 22000.0,
+      "green_cover": 0.1,
+      "dist_water_body": 2500.0
+    },
+    "prediction": "High",
+    "confidence": 0.6196
+  },
+  {
+    "timestamp": "2026-09-20T12:22:44.781922+00:00",
+    "inputs": {
+      "lst": 36.8,
+      "ndvi": 0.28,
+      "building_density": 0.62,
+      "road_density": 9.9,
+      "population_density": 9400,
+      "green_cover": 0.22,
+      "dist_water_body": 950.0
+    },
+    "prediction": "High",
+    "confidence": 0.7063
+  },
+  {
+    "timestamp": "2026-09-20T12:28:10.268930+00:00",
+    "inputs": {
+      "lst": 36.8,
+      "ndvi": 0.28,
+      "building_density": 0.62,
+      "road_density": 9.9,
+      "population_density": 9400,
+      "green_cover": 0.22,
+      "dist_water_body": 950.0
+    },
+    "prediction": "High",
+    "confidence": 0.7063
+  },
+  {
+    "timestamp": "2026-09-20T12:32:30.688164+00:00",
+    "inputs": {
+      "lst": 36.8,
+      "ndvi": 0.28,
+      "building_density": 0.62,
+      "road_density": 9.9,
+      "population_density": 9400,
+      "green_cover": 0.22,
+      "dist_water_body": 950.0
+    },
+    "prediction": "High",
+    "confidence": 0.7063
+  }
+]
