@@ -88,6 +88,35 @@ CITY_PROFILES: Dict[str, Dict[str, Any]] = {
             {"name": "Cubbon Park Green Core", "lat_offset": 0.005, "lon_offset": -0.005, "lst_delta": -4.6, "ndvi_delta": 0.42},
             {"name": "Peenya Industrial Area", "lat_offset": 0.060, "lon_offset": -0.080, "lst_delta": 5.4, "ndvi_delta": -0.15},
         ]
+    },
+    "Phoenix": {
+        "lat": 33.4484,
+        "lon": -112.0740,
+        "base_lst": 44.5,
+        "base_ndvi": 0.10,
+        "building_density": 0.72,
+        "green_cover": 0.08,
+        "population_density": 1250,
+        "zones": [
+            {"name": "Downtown Phoenix Core", "lat_offset": 0.010, "lon_offset": 0.010, "lst_delta": 3.8, "ndvi_delta": -0.04},
+            {"name": "Sky Harbor Industrial Area", "lat_offset": -0.015, "lon_offset": 0.035, "lst_delta": 4.9, "ndvi_delta": -0.07},
+            {"name": "Camelback Mountain Reserve", "lat_offset": 0.045, "lon_offset": 0.055, "lst_delta": -5.2, "ndvi_delta": 0.15},
+            {"name": "Encanto Park Green Oasis", "lat_offset": 0.025, "lon_offset": -0.015, "lst_delta": -3.8, "ndvi_delta": 0.28},
+        ]
+    },
+    "Dubai": {
+        "lat": 25.2048,
+        "lon": 55.2708,
+        "base_lst": 45.2,
+        "base_ndvi": 0.08,
+        "building_density": 0.75,
+        "green_cover": 0.06,
+        "population_density": 2200,
+        "zones": [
+            {"name": "Downtown Dubai & Burj District", "lat_offset": 0.010, "lon_offset": 0.010, "lst_delta": 3.5, "ndvi_delta": -0.03},
+            {"name": "Al Quoz Industrial Zone", "lat_offset": -0.030, "lon_offset": -0.020, "lst_delta": 5.2, "ndvi_delta": -0.05},
+            {"name": "Safa Park Green Core", "lat_offset": -0.015, "lon_offset": -0.010, "lst_delta": -4.2, "ndvi_delta": 0.26},
+        ]
     }
 }
 

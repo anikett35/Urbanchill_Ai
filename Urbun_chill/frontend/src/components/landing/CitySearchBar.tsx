@@ -15,6 +15,7 @@ interface CitySearchBarProps {
   autoFocus?: boolean;
   activeCityName?: string;
   isAnalyzing?: boolean;
+  showSubLabel?: boolean;
 }
 
 export default function CitySearchBar({
@@ -25,6 +26,7 @@ export default function CitySearchBar({
   autoFocus = false,
   activeCityName,
   isAnalyzing = false,
+  showSubLabel = true,
 }: CitySearchBarProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -107,21 +109,21 @@ export default function CitySearchBar({
   return (
     <div
       ref={containerRef}
-      className="relative flex flex-col items-end pointer-events-auto"
+      className={`relative flex flex-col ${showSubLabel ? 'items-end' : 'items-start w-full max-w-sm'} pointer-events-auto`}
     >
-      {/* Search Input Bar (HUD style) */}
+      {/* Search Input Bar */}
       <div
         className={`
           relative flex items-center
-          transition-all duration-300 ease-out
-          ${isFocused || query ? 'w-72 sm:w-80' : 'w-60 sm:w-68'}
+          transition-all duration-200 ease-out
+          ${showSubLabel ? (isFocused || query ? 'w-72 sm:w-80' : 'w-60 sm:w-68') : 'w-full'}
         `}
       >
         <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none z-10">
           {isLoading ? (
             <Loader2 className="w-3.5 h-3.5 text-primary animate-spin" />
           ) : (
-            <Search className="w-3.5 h-3.5 text-gray-400" />
+            <Search className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
           )}
         </div>
 
@@ -154,19 +156,32 @@ export default function CitySearchBar({
             onBlur?.();
           }}
           onKeyDown={handleKeyDown}
-          placeholder={activeCityName ? `City: ${activeCityName}` : placeholder}
-          className="
-            w-full pl-9 pr-8 py-2.5 rounded-xl
-            bg-gray-900/85 backdrop-blur-xl
-            border border-gray-700
-            text-gray-100 placeholder-gray-400
-            text-xs sm:text-sm font-medium
-            outline-none
-            focus:border-primary focus:ring-2 focus:ring-primary-subtle
-            hover:border-gray-600
-            transition-all duration-200
-            shadow-xl shadow-black/50
-          "
+          placeholder={activeCityName ? `Search City (Current: ${activeCityName})` : placeholder}
+          className={
+            showSubLabel
+              ? `
+                w-full pl-9 pr-8 py-2.5 rounded-xl
+                bg-gray-900/85 backdrop-blur-xl
+                border border-gray-700
+                text-gray-100 placeholder-gray-400
+                text-xs sm:text-sm font-medium
+                outline-none
+                focus:border-primary focus:ring-2 focus:ring-primary-subtle
+                hover:border-gray-600
+                transition-all duration-200
+                shadow-xl shadow-black/50
+              `
+              : `
+                w-full pl-9 pr-8 py-2 rounded-xl text-xs sm:text-sm font-medium outline-none
+                bg-gray-100 dark:bg-gray-750/70
+                border border-gray-200 dark:border-gray-700
+                text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500
+                focus:bg-white dark:focus:bg-gray-800
+                focus:border-primary focus:ring-2 focus:ring-primary/20
+                hover:border-gray-300 dark:hover:border-gray-600
+                transition-all duration-150
+              `
+          }
           autoComplete="off"
           spellCheck={false}
         />
@@ -175,7 +190,7 @@ export default function CitySearchBar({
         {query && (
           <button
             onClick={handleClear}
-            className="absolute inset-y-0 right-2.5 flex items-center p-1 text-gray-400 hover:text-gray-100 transition-colors"
+            className="absolute inset-y-0 right-2.5 flex items-center p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
             aria-label="Clear search"
           >
             <X className="w-3.5 h-3.5" />
@@ -184,21 +199,23 @@ export default function CitySearchBar({
       </div>
 
       {/* Sub-label instrument telemetry */}
-      <div className="flex items-center gap-1.5 mt-1.5 mr-1 text-[10px] font-mono tracking-wider text-gray-400 uppercase select-none">
-        <span className="relative flex h-1.5 w-1.5">
-          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isAnalyzing ? 'bg-warning' : 'bg-success'}`} />
-          <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isAnalyzing ? 'bg-warning' : 'bg-success'}`} />
-        </span>
-        {isAnalyzing ? (
-          <span className="text-warning">Telemetry Ingesting</span>
-        ) : activeCityName ? (
-          <span>{activeCityName} • Live feed</span>
-        ) : (
-          <span>Satellite Feed Active</span>
-        )}
-      </div>
+      {showSubLabel && (
+        <div className="flex items-center gap-1.5 mt-1.5 mr-1 text-[10px] font-mono tracking-wider text-gray-400 uppercase select-none">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isAnalyzing ? 'bg-warning' : 'bg-success'}`} />
+            <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isAnalyzing ? 'bg-warning' : 'bg-success'}`} />
+          </span>
+          {isAnalyzing ? (
+            <span className="text-warning">Analyzing City Heat…</span>
+          ) : activeCityName ? (
+            <span>{activeCityName} • Active</span>
+          ) : (
+            <span>Global Search Ready</span>
+          )}
+        </div>
+      )}
 
-      {/* Autocomplete dropdown (right-aligned so it expands leftward) */}
+      {/* Autocomplete dropdown */}
       <AnimatePresence>
         {isOpen && results.length > 0 && (
           <motion.ul
@@ -210,16 +227,14 @@ export default function CitySearchBar({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="
-              absolute z-50 top-full right-0 mt-2
-              w-72 sm:w-88
-              bg-gray-900/95 backdrop-blur-2xl
-              border border-gray-700 rounded-2xl
-              shadow-2xl shadow-black/80
+            className={`
+              absolute z-50 top-full ${showSubLabel ? 'right-0 mt-2 w-72 sm:w-88 bg-gray-900/95 border-gray-700' : 'left-0 mt-1.5 w-full min-w-[280px] max-w-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'}
+              backdrop-blur-2xl border rounded-2xl
+              shadow-xl shadow-black/10 dark:shadow-black/50
               overflow-hidden
-            "
+            `}
           >
-            <div className="px-3.5 py-2 border-b border-gray-700 text-[10px] uppercase font-mono tracking-widest text-gray-400">
+            <div className={`px-3.5 py-2 border-b text-[10px] uppercase font-mono tracking-widest ${showSubLabel ? 'border-gray-700 text-gray-400' : 'border-gray-100 dark:border-gray-700 text-gray-400'}`}>
               Matched Cities ({results.length})
             </div>
             {results.map((city, i) => (
@@ -231,13 +246,15 @@ export default function CitySearchBar({
                 onMouseDown={() => handleSelect(city)}
                 onMouseEnter={() => setActiveIndex(i)}
                 className={`
-                  flex items-start gap-3 px-4 py-2.5 cursor-pointer
+                  flex items-start gap-3 px-3.5 py-2.5 cursor-pointer
                   transition-colors duration-100
                   ${i === activeIndex
-                    ? 'bg-primary/20 text-gray-100'
-                    : 'text-gray-300 hover:bg-gray-800'
+                    ? 'bg-primary/10 text-primary'
+                    : showSubLabel
+                    ? 'text-gray-300 hover:bg-gray-800'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-750'
                   }
-                  ${i !== results.length - 1 ? 'border-b border-gray-700' : ''}
+                  ${i !== results.length - 1 ? (showSubLabel ? 'border-b border-gray-700' : 'border-b border-gray-100 dark:border-gray-750') : ''}
                 `}
               >
                 <MapPin className={`
@@ -245,8 +262,10 @@ export default function CitySearchBar({
                   ${i === activeIndex ? 'text-primary' : 'text-gray-400'}
                 `} />
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-xs truncate text-gray-100">{city.name}</div>
-                  <div className="text-[11px] text-gray-400 truncate mt-0.5">{city.displayName}</div>
+                  <div className={`font-semibold text-xs truncate ${i === activeIndex ? 'text-primary' : showSubLabel ? 'text-gray-100' : 'text-gray-900 dark:text-gray-100'}`}>
+                    {city.name}
+                  </div>
+                  <div className="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5">{city.displayName}</div>
                 </div>
               </li>
             ))}

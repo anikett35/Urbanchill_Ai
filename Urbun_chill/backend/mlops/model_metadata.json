@@ -1,10 +1,15 @@
 {
   "model_name": "UrbanChill_HeatRisk_RandomForest",
-  "model_version": "1.0.0",
+  "model_version": "urbanchill-rf-1.1",
   "framework": "scikit-learn",
-  "algorithm": "RandomForestClassifier",
-  "training_timestamp": "2026-09-20T12:05:23.419770+00:00",
-  "n_samples": 2000,
+  "sklearn_version": "1.4.2",
+  "python_version": "3.12.2",
+  "algorithm": "RandomForestClassifier (Calibrated)",
+  "calibration_status": "Calibrated via 5-fold Sigmoid Platt Scaling",
+  "dataset_version": "synthetic-benchmark-v2",
+  "scientific_notice": "Trained on domain-guided synthetic surrogate benchmark according to IPCC urban heat vulnerability rubrics.",
+  "training_timestamp": "2026-09-23T16:11:00.582407+00:00",
+  "n_samples": 2200,
   "n_features": 7,
   "feature_names": [
     "lst",
@@ -26,151 +31,158 @@
     "max_depth": 12,
     "min_samples_split": 4,
     "min_samples_leaf": 2,
-    "class_weight": "balanced"
+    "class_weight": "balanced",
+    "calibration_method": "sigmoid"
   },
   "metrics": {
-    "accuracy": 0.9375,
-    "f1_macro": 0.9217,
-    "f1_weighted": 0.9376,
+    "accuracy": 0.8545,
+    "test_accuracy": 0.8545,
+    "f1_macro": 0.8428,
+    "test_macro_f1": 0.8428,
+    "test_weighted_f1": 0.8547,
+    "test_precision_macro": 0.8507,
+    "test_recall_macro": 0.8362,
+    "cv_5fold_macro_f1_mean": 0.814,
+    "cv_5fold_macro_f1_std": 0.0341,
     "confusion_matrix": [
       [
-        130,
-        5,
+        123,
+        24,
         0,
         0
       ],
       [
-        5,
-        174,
-        8,
+        14,
+        163,
+        9,
         0
       ],
       [
         0,
-        6,
-        67,
-        0
+        10,
+        76,
+        3
       ],
       [
         0,
         0,
-        1,
-        4
+        4,
+        14
       ]
     ],
     "detailed_report": {
       "Low": {
-        "precision": 0.9629629629629629,
-        "recall": 0.9629629629629629,
-        "f1-score": 0.9629629629629629,
-        "support": 135.0
+        "precision": 0.8978102189781022,
+        "recall": 0.8367346938775511,
+        "f1-score": 0.8661971830985915,
+        "support": 147.0
       },
       "Moderate": {
-        "precision": 0.9405405405405406,
-        "recall": 0.93048128342246,
-        "f1-score": 0.9354838709677419,
-        "support": 187.0
+        "precision": 0.8274111675126904,
+        "recall": 0.8763440860215054,
+        "f1-score": 0.8511749347258486,
+        "support": 186.0
       },
       "High": {
-        "precision": 0.881578947368421,
-        "recall": 0.9178082191780822,
-        "f1-score": 0.8993288590604027,
-        "support": 73.0
+        "precision": 0.8539325842696629,
+        "recall": 0.8539325842696629,
+        "f1-score": 0.8539325842696629,
+        "support": 89.0
       },
       "Critical": {
-        "precision": 1.0,
-        "recall": 0.8,
-        "f1-score": 0.8888888888888888,
-        "support": 5.0
+        "precision": 0.8235294117647058,
+        "recall": 0.7777777777777778,
+        "f1-score": 0.8,
+        "support": 18.0
       },
-      "accuracy": 0.9375,
+      "accuracy": 0.8545454545454545,
       "macro avg": {
-        "precision": 0.9462706127179812,
-        "recall": 0.9028131163908764,
-        "f1-score": 0.9216661454699991,
-        "support": 400.0
+        "precision": 0.8506708456312904,
+        "recall": 0.8361972854866242,
+        "f1-score": 0.8428261755235258,
+        "support": 440.0
       },
       "weighted avg": {
-        "precision": 0.9380908605974396,
-        "recall": 0.9375,
-        "f1-score": 0.937577337567054,
-        "support": 400.0
+        "precision": 0.8561366108156958,
+        "recall": 0.8545454545454545,
+        "f1-score": 0.8546580085784108,
+        "support": 440.0
       }
     }
   },
   "feature_importances": {
-    "lst": 0.3224,
-    "building_density": 0.2129,
-    "green_cover": 0.1459,
-    "ndvi": 0.1292,
-    "population_density": 0.1127,
-    "road_density": 0.0582,
-    "dist_water_body": 0.0186
+    "lst": 0.3035,
+    "building_density": 0.1872,
+    "ndvi": 0.1679,
+    "green_cover": 0.1237,
+    "population_density": 0.1021,
+    "road_density": 0.0815,
+    "dist_water_body": 0.0341
   },
   "baseline_feature_distributions": {
     "lst": {
-      "mean": 36.74817,
-      "std": 5.402931054815668,
-      "min": 22.0,
-      "max": 52.0,
-      "p25": 33.08,
-      "p50": 36.745000000000005,
-      "p75": 40.255
+      "mean": 36.7,
+      "std": 5.705,
+      "min": 20.0,
+      "max": 53.0,
+      "p25": 32.88,
+      "p50": 36.66,
+      "p75": 40.392
     },
     "ndvi": {
-      "mean": 0.5245059999999999,
-      "std": 0.14334818909096073,
-      "min": 0.03,
+      "mean": 0.468,
+      "std": 0.148,
+      "min": -0.034,
       "max": 0.85,
-      "p25": 0.427,
-      "p50": 0.528,
-      "p75": 0.619
+      "p25": 0.371,
+      "p50": 0.467,
+      "p75": 0.567
     },
     "building_density": {
-      "mean": 0.3807895,
-      "std": 0.18339553470797867,
+      "mean": 0.411,
+      "std": 0.185,
       "min": 0.05,
-      "max": 0.95,
-      "p25": 0.249,
-      "p50": 0.378,
-      "p75": 0.506
+      "max": 0.939,
+      "p25": 0.287,
+      "p50": 0.409,
+      "p75": 0.535
     },
     "road_density": {
-      "mean": 8.859445,
-      "std": 3.9130485706841496,
+      "mean": 9.253,
+      "std": 4.121,
       "min": 1.0,
-      "max": 22.85,
-      "p25": 6.09,
-      "p50": 8.75,
-      "p75": 11.59
+      "max": 23.34,
+      "p25": 6.297,
+      "p50": 9.145,
+      "p75": 12.11
     },
     "population_density": {
-      "mean": 12174.986,
-      "std": 5473.851952829447,
+      "mean": 12636.834,
+      "std": 5541.772,
       "min": 500.0,
-      "max": 31015.2,
-      "p25": 8309.3,
-      "p50": 12119.0,
-      "p75": 15872.15
+      "max": 31369.0,
+      "p25": 8871.775,
+      "p50": 12631.35,
+      "p75": 16338.975
     },
     "green_cover": {
-      "mean": 0.496856,
-      "std": 0.141296336085886,
+      "mean": 0.431,
+      "std": 0.144,
       "min": 0.02,
       "max": 0.8,
-      "p25": 0.401,
-      "p50": 0.4995,
-      "p75": 0.586
+      "p25": 0.338,
+      "p50": 0.43,
+      "p75": 0.528
     },
     "dist_water_body": {
-      "mean": 1214.0541,
-      "std": 1150.6574647277776,
+      "mean": 1334.987,
+      "std": 1239.537,
       "min": 15.0,
       "max": 6000.0,
-      "p25": 368.35,
-      "p50": 890.5,
-      "p75": 1676.225
+      "p25": 421.7,
+      "p50": 974.3,
+      "p75": 1841.175
     }
   },
-  "artifact_path": "A:\\MY EMPIRE\\chill\\Urbun_chill\\backend\\ml\\artifacts\\heat_risk_model.joblib"
+  "artifact_path": "A:\\MY EMPIRE\\Urbun_chil\\Urbun_chill\\backend\\ml\\artifacts\\heat_risk_model.joblib"
 }

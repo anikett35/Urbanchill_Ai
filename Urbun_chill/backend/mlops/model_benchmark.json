@@ -1,0 +1,71 @@
+{
+  "benchmark_timestamp": "2026-09-23T16:11:37Z",
+  "dataset_samples": 2000,
+  "test_samples": 400,
+  "features_evaluated": [
+    "lst",
+    "ndvi",
+    "building_density",
+    "road_density",
+    "population_density",
+    "green_cover",
+    "dist_water_body"
+  ],
+  "classes": [
+    "Low",
+    "Moderate",
+    "High",
+    "Critical"
+  ],
+  "models": [
+    {
+      "model_name": "Baseline (Dummy Stratified)",
+      "accuracy": 0.3525,
+      "macro_f1": 0.2877,
+      "weighted_f1": 0.3512,
+      "precision_macro": 0.2852,
+      "recall_macro": 0.2914,
+      "cv_5fold_macro_f1_mean": 0.2543,
+      "cv_5fold_macro_f1_std": 0.0199,
+      "inference_latency_ms": 0.006,
+      "training_time_seconds": 0.0013
+    },
+    {
+      "model_name": "Decision Tree",
+      "accuracy": 0.7825,
+      "macro_f1": 0.7766,
+      "weighted_f1": 0.7825,
+      "precision_macro": 0.814,
+      "recall_macro": 0.751,
+      "cv_5fold_macro_f1_mean": 0.7407,
+      "cv_5fold_macro_f1_std": 0.0124,
+      "inference_latency_ms": 0.002,
+      "training_time_seconds": 0.0245
+    },
+    {
+      "model_name": "Random Forest (100 Trees)",
+      "accuracy": 0.8275,
+      "macro_f1": 0.8477,
+      "weighted_f1": 0.828,
+      "precision_macro": 0.857,
+      "recall_macro": 0.8396,
+      "cv_5fold_macro_f1_mean": 0.8118,
+      "cv_5fold_macro_f1_std": 0.0295,
+      "inference_latency_ms": 0.038,
+      "training_time_seconds": 0.7305
+    },
+    {
+      "model_name": "HistGradientBoosting",
+      "accuracy": 0.8125,
+      "macro_f1": 0.8277,
+      "weighted_f1": 0.8131,
+      "precision_macro": 0.847,
+      "recall_macro": 0.8113,
+      "cv_5fold_macro_f1_mean": 0.7768,
+      "cv_5fold_macro_f1_std": 0.0523,
+      "inference_latency_ms": 0.058,
+      "training_time_seconds": 2.3848
+    }
+  ],
+  "selection_rationale": "Random Forest selected as production architecture due to optimal balance between Macro-F1 (high resistance to class boundary overfitting), native out-of-bag variance estimation, and sub-millisecond per-sample inference latency required for 25-sector spatial batching."
+}

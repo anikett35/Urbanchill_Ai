@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { NOMINATIM_BASE, CityResult } from '@/lib/globeConfig';
+import { NOMINATIM_BASE, CityResult, AdministrativeLevel } from '@/lib/globeConfig';
 
 export function useCityGeocode() {
   const [results, setResults] = useState<CityResult[]>([]);
@@ -35,12 +35,48 @@ export function useCityGeocode() {
 
       const mapped: CityResult[] = data
         .filter((r) => r.lat && r.lon)
-        .map((r) => ({
-          name: r.name || r.display_name.split(',')[0].trim(),
-          lat: parseFloat(r.lat),
-          lon: parseFloat(r.lon),
-          displayName: r.display_name,
-        }));
+        .map((r) => {
+          const addr = r.address || {};
+          const country = addr.country;
+          const state = addr.state || addr.province || addr.region;
+          const district = addr.state_district || addr.county || addr.district;
+          const taluka = addr.subdistrict || addr.taluk || addr.tehsil || addr.municipality || addr.city;
+          const area = addr.suburb || addr.neighbourhood || addr.residential || addr.quarter || addr.village || addr.town || r.name;
+
+          let level: AdministrativeLevel = 'area';
+          const type = r.type || r.addresstype || '';
+          if (type === 'country') level = 'country';
+          else if (['state', 'province', 'region'].includes(type)) level = 'state';
+          else if (['county', 'state_district', 'district'].includes(type)) level = 'district';
+          else if (['subdistrict', 'taluk', 'tehsil', 'city', 'municipality'].includes(type)) level = 'taluka';
+          else level = 'area';
+
+          const bbox: [number, number, number, number] | undefined =
+            Array.isArray(r.boundingbox) && r.boundingbox.length === 4
+              ? [
+                  parseFloat(r.boundingbox[0]), // minLat
+                  parseFloat(r.boundingbox[1]), // maxLat
+                  parseFloat(r.boundingbox[2]), // minLon
+                  parseFloat(r.boundingbox[3]), // maxLon
+                ]
+              : undefined;
+
+          return {
+            name: r.name || area || taluka || r.display_name.split(',')[0].trim(),
+            lat: parseFloat(r.lat),
+            lon: parseFloat(r.lon),
+            displayName: r.display_name,
+            bbox,
+            level,
+            hierarchy: {
+              country,
+              state,
+              district,
+              taluka,
+              area,
+            },
+          };
+        });
 
       setResults(mapped);
     } catch (err: any) {
@@ -72,19 +108,40 @@ export function useCityGeocode() {
 
         const addr = data.address ?? {};
         const name =
+          addr.suburb ||
+          addr.neighbourhood ||
           addr.city ||
           addr.town ||
-          addr.village ||
+          addr.subdistrict ||
           addr.county ||
           addr.state ||
           data.name ||
           'Selected Location';
+
+        const bbox: [number, number, number, number] | undefined =
+          Array.isArray(data.boundingbox) && data.boundingbox.length === 4
+            ? [
+                parseFloat(data.boundingbox[0]),
+                parseFloat(data.boundingbox[1]),
+                parseFloat(data.boundingbox[2]),
+                parseFloat(data.boundingbox[3]),
+              ]
+            : undefined;
 
         return {
           name,
           lat: parseFloat(data.lat),
           lon: parseFloat(data.lon),
           displayName: data.display_name ?? name,
+          bbox,
+          level: 'area',
+          hierarchy: {
+            country: addr.country,
+            state: addr.state,
+            district: addr.state_district || addr.county,
+            taluka: addr.subdistrict || addr.city,
+            area: addr.suburb || addr.neighbourhood || name,
+          },
         };
       } catch {
         return null;

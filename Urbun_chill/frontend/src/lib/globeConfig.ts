@@ -23,11 +23,24 @@ export const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+export type AdministrativeLevel = 'country' | 'state' | 'district' | 'taluka' | 'area';
+
+export type LocationHierarchy = {
+  country?: string;
+  state?: string;
+  district?: string;
+  taluka?: string;
+  area?: string;
+};
+
 export type CityResult = {
   name: string;
   lat: number;
   lon: number;
   displayName: string;
+  bbox?: [number, number, number, number]; // [minLat, maxLat, minLon, maxLon]
+  level?: AdministrativeLevel;
+  hierarchy?: LocationHierarchy;
 };
 
 export type AppState =
@@ -41,14 +54,38 @@ export type HeatRisk = 'Low' | 'Moderate' | 'High' | 'Critical';
 
 export type AnalyzeResult = {
   heatRisk: HeatRisk;
-  lst: number;         // Land Surface Temperature °C
-  ndvi: number;        // 0–1 vegetation index
+  lst: number;         // Estimated Surface Skin Temperature °C
+  lstName?: string;
+  ambientTemp?: number | null;
+  apparentTemp?: number | null;
+  weatherCondition?: string | null;
+  ndvi: number;        // Estimated Vegetation Index Proxy
+  ndviName?: string;
   uvIndex: number;
   humidity: number;    // %
   airQualityIndex: number;
+  pm2_5?: number;
+  buildingDensity?: number;
+  roadDensity?: number;
+  greenCover?: number;
+  populationDensity?: number;
+  heatHazardIndex?: number;
+  vulnerabilityIndex?: number;
+  confidence?: number;
+  calibratedConfidence?: number;
+  calibrationStatus?: string;
+  modelVersion?: string;
+  densityConfidence?: string;
+  dataQuality?: {
+    score: number;
+    level: string;
+    factors: { source: string; name: string; status: string; points: number; details: string }[];
+  };
+  dataProvenance?: Record<string, any>;
   recommendations: string[];
-  topHeatZones: { name: string; temp: number; risk: HeatRisk }[];
+  topHeatZones: { name: string; temp: number; risk: HeatRisk; ndvi?: number }[];
   weeklyForecast: { day: string; maxTemp: number; minTemp: number }[];
+  isDay?: number;
 };
 
 // ── Coordinate utilities ─────────────────────────────────────────────────────

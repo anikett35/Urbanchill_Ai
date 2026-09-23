@@ -7,6 +7,9 @@ BACKEND_ROOT = Path(__file__).resolve().parent
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,7 +25,8 @@ from api.routes import (
     compare,
     report,
     history,
-    mlops
+    mlops,
+    agent
 )
 
 @asynccontextmanager
@@ -51,12 +55,30 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
-        "*"
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print(f"[UrbanChill Server Error] Path: {request.url.path} | Error: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": {
+                "code": "SERVER_PROCESSING_ERROR",
+                "message": "An error occurred while processing the geospatial telemetry request. Please verify city name or retry.",
+                "details": str(exc),
+                "retryable": True
+            }
+        }
+    )
 
 # Register API Routers
 app.include_router(analyze.router, prefix="/api", tags=["Analysis"])
@@ -68,6 +90,7 @@ app.include_router(compare.router, prefix="/api", tags=["City Comparison"])
 app.include_router(report.router, prefix="/api", tags=["Report Generation"])
 app.include_router(history.router, prefix="/api", tags=["Analysis History"])
 app.include_router(mlops.router, prefix="/api", tags=["MLOps & Monitoring"])
+app.include_router(agent.router, prefix="/api", tags=["Voice Agent"])
 app.include_router(region.router, prefix="/api", tags=["Legacy Region"])
 
 @app.get("/")

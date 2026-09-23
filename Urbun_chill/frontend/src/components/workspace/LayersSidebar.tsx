@@ -14,10 +14,10 @@ interface LayerItem {
 }
 
 const LAYERS: LayerItem[] = [
-  { id: 'lst', label: 'Land Surface Temperature', icon: <Thermometer className="w-4 h-4" />, color: '#fb732c', description: 'Thermal infrared from Landsat-8 Band 10', defaultOn: true },
-  { id: 'ndvi', label: 'Vegetation Index (NDVI)', icon: <Leaf className="w-4 h-4" />, color: '#10b981', description: 'Canopy density via Google Earth Engine', defaultOn: true },
-  { id: 'heat_risk', label: 'ML Heat-Risk Zones', icon: <AlertTriangle className="w-4 h-4" />, color: '#f59e0b', description: 'Random Forest predictions per spatial sector', defaultOn: true },
-  { id: 'land_use', label: 'Urban Morphology & Buildings', icon: <Building className="w-4 h-4" />, color: '#38bdf8', description: 'Building footprints & road density massing', defaultOn: false },
+  { id: 'lst', label: 'Estimated Surface Skin Temperature', icon: <Thermometer className="w-4 h-4" />, color: '#2a85ff', description: 'Reanalysis + UHI thermal proxy model', defaultOn: true },
+  { id: 'ndvi', label: 'Vegetation Index Proxy (NDVI)', icon: <Leaf className="w-4 h-4" />, color: '#2a85ff', description: 'Estimated canopy density proxy from urban morphology', defaultOn: true },
+  { id: 'heat_risk', label: 'ML Heat-Risk Zones', icon: <AlertTriangle className="w-4 h-4" />, color: '#2a85ff', description: 'Random Forest surrogate predictions per spatial model sector', defaultOn: true },
+  { id: 'land_use', label: 'Urban Morphology & Buildings', icon: <Building className="w-4 h-4" />, color: '#2a85ff', description: 'Building footprints & road density massing', defaultOn: false },
 ];
 
 function SkeletonBlock({ w = 'w-full', h = 'h-3' }: { w?: string; h?: string }) {
@@ -73,23 +73,23 @@ export default function LayersSidebar({
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '-100%', opacity: 0 }}
       transition={{ duration: 0.38, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed left-0 top-16 bottom-0 z-30 w-72 xl:w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden shadow-sm"
+      className="fixed left-0 top-16 bottom-0 z-30 w-72 xl:w-80 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-r border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden shadow-2xl text-gray-900 dark:text-gray-100"
       aria-label="Map layers"
     >
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/60">
+        <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
           <Layers className="w-4 h-4 text-primary" />
         </div>
         <div>
           <div className="text-gray-900 dark:text-gray-100 font-bold text-xs uppercase tracking-wider">Map Layers</div>
-          <div className="text-gray-500 dark:text-gray-400 text-[11px]">Spectral & Spatial Overlays</div>
+          <div className="text-gray-500 dark:text-gray-400 text-[11px]">Spatial Model & Proxy Overlays</div>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 space-y-2">
+              <div key={i} className="card card-border card-shadow p-4 space-y-2">
                 <SkeletonBlock h="h-3" w="w-3/4" />
                 <SkeletonBlock h="h-2" w="w-1/2" />
                 <SkeletonBlock h="h-1.5" w="w-full" />
@@ -106,29 +106,29 @@ export default function LayersSidebar({
                   transition={{ duration: 0.3 }}
                   className={`rounded-2xl border p-4 transition-all duration-200 ${
                     on
-                      ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60 shadow-xs'
-                      : 'border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-800 opacity-55'
+                      ? 'border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-750 shadow-xs'
+                      : 'border-gray-200/50 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-800/40 opacity-55'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <span style={{ color: layer.color }}>{layer.icon}</span>
+                      <span className="text-primary">{layer.icon}</span>
                       <span className="text-gray-900 dark:text-gray-100 text-xs font-semibold">{layer.label}</span>
                     </div>
                     <button
                       onClick={() => toggleLayer(layer.id)}
                       aria-label={`${on ? 'Hide' : 'Show'} ${layer.label}`}
-                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                      className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-100 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
-                      {on ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      {on ? <Eye className="w-4 h-4 text-primary" /> : <EyeOff className="w-4 h-4" />}
                     </button>
                   </div>
                   <p className="text-gray-500 dark:text-gray-400 text-[11px] mb-3 leading-relaxed">{layer.description}</p>
                   {on && (
-                    <div className="pt-1 border-t border-gray-200 dark:border-gray-700/60">
-                      <div className="flex items-center justify-between mb-1 mt-2">
+                    <div className="pt-2 border-t border-gray-200 dark:border-gray-700/80">
+                      <div className="flex items-center justify-between mb-1 mt-1">
                         <span className="text-gray-500 dark:text-gray-400 text-[10px] uppercase font-semibold tracking-wider">Opacity</span>
-                        <span className="text-gray-700 dark:text-gray-300 font-mono text-[10px] font-bold">{opacity}%</span>
+                        <span className="text-primary font-mono text-[10px] font-bold">{opacity}%</span>
                       </div>
                       <input
                         type="range"
@@ -146,9 +146,9 @@ export default function LayersSidebar({
             })}
       </div>
 
-      <div className="px-5 py-3.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
+      <div className="px-5 py-3.5 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/60">
         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <span>Active GIS Synchronized</span>
         </div>
       </div>

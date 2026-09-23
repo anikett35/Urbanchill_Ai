@@ -1,0 +1,21 @@
+# Backend Environment Variables
+.env
+.env.*
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+env/
+
+# Databases
+*.duckdb
+*.duckdb.wal
+data/*.duckdb
+data/*.duckdb.wal

@@ -28,51 +28,7 @@ const GlobeCanvas = dynamic(() => import('./GlobeCanvas'), {
   ),
 });
 
-// ── Mock /analyze endpoint ────────────────────────────────────────────────────
-// Replace the body of this function with a real fetch() to POST /analyze
-// once the FastAPI backend is running.
-
-const RECOMMENDATIONS = [
-  'Plant 20% more urban tree canopy in high-density zones',
-  'Install cool roofs on commercial buildings (reflectivity > 0.65)',
-  'Create wind corridors along main arterial roads',
-  'Expand green-cover parks in heat-island hotspots',
-  'Deploy ground-level misting systems at transit nodes',
-];
-
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-async function mockAnalyze(city: CityResult): Promise<AnalyzeResult> {
-  // Simulate network latency
-  await new Promise((r) => setTimeout(r, 1800 + Math.random() * 1200));
-
-  const lstBase = 32 + Math.random() * 14;
-  const riskIdx = Math.floor(Math.random() * 4) as 0 | 1 | 2 | 3;
-  const riskLabels = ['Low', 'Moderate', 'High', 'Critical'] as const;
-
-  return {
-    heatRisk: riskLabels[riskIdx],
-    lst: lstBase,
-    ndvi: 0.12 + Math.random() * 0.45,
-    uvIndex: 4 + Math.floor(Math.random() * 9),
-    humidity: 35 + Math.floor(Math.random() * 50),
-    airQualityIndex: 40 + Math.floor(Math.random() * 120),
-    recommendations: RECOMMENDATIONS.slice(0, 3 + Math.floor(Math.random() * 3)),
-    topHeatZones: [
-      { name: `${city.name} Industrial Area`, temp: lstBase + 4.2, risk: 'Critical' },
-      { name: `${city.name} City Centre`,     temp: lstBase + 2.1, risk: 'High'     },
-      { name: `${city.name} Residential West`,temp: lstBase - 1.0, risk: 'Moderate' },
-    ],
-    weeklyForecast: DAYS.map((day, i) => ({
-      day,
-      maxTemp: lstBase + Math.sin(i * 0.9) * 3 + Math.random() * 2,
-      minTemp: lstBase - 6 + Math.random() * 2,
-    })),
-  };
-}
-
 import { fetchCityAnalysis } from '@/lib/apiClient';
-import CitySearchBar from './CitySearchBar';
 
 export default function GlobeLandingPage() {
   const [appState, setAppState] = useState<AppState>('idle_rotating');
@@ -102,9 +58,12 @@ export default function GlobeLandingPage() {
       const result = await fetchCityAnalysis(flyTarget);
       setAnalyzeData(result);
       setAppState('workspace_ready');
-    } catch {
-      // Fail gracefully — workspace shows empty state
-      setAppState('workspace_ready');
+    } catch (err: any) {
+      console.error('[UrbanChill] Analysis fetch error:', err);
+      alert(err?.message || 'Unable to resolve the requested city. Please verify the city name or provide explicit coordinates.');
+      setAppState('idle_rotating');
+      setFlyTarget(null);
+      setAnalyzeData(null);
     }
   }, [flyTarget]);
 
@@ -139,19 +98,7 @@ export default function GlobeLandingPage() {
         pauseRotation={pauseRotation}
       />
 
-      {/* ── Top-right HUD Search Control (visible during landing) ── */}
-      {isOverlayVisible && (
-        <div className="fixed top-4 right-4 z-40">
-          <CitySearchBar
-            onCitySelected={handleCitySelected}
-            onFocus={() => setPauseRotation(true)}
-            onBlur={() => setPauseRotation(false)}
-            placeholder="Search any global city…"
-          />
-        </div>
-      )}
-
-      {/* ── Landing overlay (hero card with title + quick chips) ── */}
+      {/* ── Landing overlay (hero card with title + search + quick chips) ── */}
       <LandingOverlay
         visible={isOverlayVisible}
         onCitySelected={handleCitySelected}

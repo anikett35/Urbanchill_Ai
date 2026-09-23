@@ -96,7 +96,7 @@ export default function MarketingFooter() {
             © {new Date().getFullYear()} UrbanChill AI Inc. All rights reserved.
           </div>
           <div className="font-mono text-[11px] text-center sm:text-right">
-            Landsat-8 & Sentinel-2 imagery courtesy of USGS / ESA & Google Earth Engine.
+            Meteorological telemetry courtesy of Open-Meteo & OpenWeather. Spatial vector morphology courtesy of Mapbox & OSM.
           </div>
         </div>
       </div>

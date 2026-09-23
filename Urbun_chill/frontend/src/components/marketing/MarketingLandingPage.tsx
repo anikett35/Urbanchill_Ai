@@ -36,13 +36,13 @@ export default function MarketingLandingPage() {
     },
     {
       num: '02',
-      title: 'Pull satellite imagery',
-      desc: 'Ingest multispectral Landsat-8 and Sentinel-2 telemetry bands via Google Earth Engine pipelines.',
+      title: 'Analyze climate telemetry',
+      desc: 'Ingest live meteorological reanalysis, solar radiation, and spatial building morphology data.',
     },
     {
       num: '03',
       title: 'Calculate & predict',
-      desc: 'Process Land Surface Temperature (LST), NDVI indices, and Random Forest machine learning models.',
+      desc: 'Process Estimated Surface Skin Temperature (LST), NDVI proxies, and Random Forest machine learning models.',
     },
     {
       num: '04',
@@ -55,8 +55,8 @@ export default function MarketingLandingPage() {
     {
       icon: <Thermometer className="w-5 h-5 text-[#E24E1B]" />,
       tint: 'bg-[#FBE7DD] border-[#E24E1B]/20',
-      title: 'Multispectral Thermal Mapping',
-      desc: 'Sub-pixel Land Surface Temperature (LST) derived from thermal infrared satellite sensors to detect micro-urban heat islands.',
+      title: 'Spatial Thermal Mapping',
+      desc: 'Estimated Surface Skin Temperature (LST) derived from reanalysis and spatial building mass to detect micro-urban heat islands.',
     },
     {
       icon: <Leaf className="w-5 h-5 text-[#1E7A52]" />,
@@ -106,7 +106,7 @@ export default function MarketingLandingPage() {
 
               {/* Subcopy */}
               <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl text-pretty">
-                Empower municipal planning with continuous satellite thermal analytics. Model land surface temperatures, project microclimate heat islands, and simulate targeted cooling interventions before breaking ground.
+                Empower municipal planning with spatial urban thermal analytics. Model estimated surface skin temperatures, project microclimate heat islands, and simulate targeted cooling interventions before breaking ground.
               </p>
 
               {/* Action Buttons */}

@@ -1,6 +1,31 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Universal scrollbar concealment for clean, modern dashboard aesthetic */
+aside,
+aside *,
+.side-nav,
+.side-nav-content,
+.no-scrollbar,
+.no-scrollbar * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+aside::-webkit-scrollbar,
+aside *::-webkit-scrollbar,
+.side-nav::-webkit-scrollbar,
+.side-nav *::-webkit-scrollbar,
+.side-nav-content::-webkit-scrollbar,
+.side-nav-content *::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -15,6 +40,8 @@
   --color-error-subtle: #ff6a551a;
   --color-warning: #f59e0b;
   --color-warning-subtle: #f59e0b1a;
+  --color-info: #2a85ff;
+  --color-info-subtle: #2a85ff1a;
 
   --color-gray-50: #fafafa;
   --color-gray-100: #f5f5f5;
@@ -24,7 +51,9 @@
   --color-gray-500: #737373;
   --color-gray-600: #525252;
   --color-gray-700: #404040;
+  --color-gray-750: #333333;
   --color-gray-800: #262626;
+  --color-gray-850: #1c1c1c;
   --color-gray-900: #171717;
   --color-gray-950: #0a0a0a;
 
@@ -37,54 +66,184 @@
   --color-border: var(--uc-border);
   --color-input: var(--uc-input);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --radius: 0.625rem;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --radius: 0.75rem;
 }
 
 :root {
-  --uc-primary: #fb732c;
-  --uc-primary-deep: #cc5c24;
-  --uc-primary-mild: #fc8f56;
-  --uc-primary-subtle: #fb732c1a;
+  --uc-primary: #2a85ff;
+  --uc-primary-deep: #0069f6;
+  --uc-primary-mild: #4996ff;
+  --uc-primary-subtle: #2a85ff1a;
 
-  --uc-background: #f5f5f5;
+  --uc-background: #fafafa;
   --uc-foreground: #171717;
   --uc-card: #ffffff;
   --uc-card-foreground: #171717;
   --uc-muted: #f5f5f5;
   --uc-muted-foreground: #737373;
   --uc-border: #e5e5e5;
-  --uc-input: #f5f5f5;
+  --uc-input: #ffffff;
 }
 
 .dark {
-  --uc-primary: #fb732c;
-  --uc-primary-deep: #cc5c24;
-  --uc-primary-mild: #fc8f56;
-  --uc-primary-subtle: #fb732c1a;
+  --uc-primary: #2a85ff;
+  --uc-primary-deep: #0069f6;
+  --uc-primary-mild: #4996ff;
+  --uc-primary-subtle: #2a85ff1a;
 
-  --uc-background: #0a0a0a;
-  --uc-foreground: #f5f5f5;
-  --uc-card: #262626;
-  --uc-card-foreground: #f5f5f5;
-  --uc-muted: #262626;
-  --uc-muted-foreground: #a3a3a3;
-  --uc-border: #404040;
-  --uc-input: #404040;
+  --uc-background: #0f172a;
+  --uc-foreground: #f8fafc;
+  --uc-card: #1e293b;
+  --uc-card-foreground: #f8fafc;
+  --uc-muted: #1e293b;
+  --uc-muted-foreground: #94a3b8;
+  --uc-border: #334155;
+  --uc-input: #1e293b;
 }
 
 @layer base {
-  * {
+  *, ::after, ::before {
     @apply border-border;
   }
   body {
     @apply bg-background text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal;
+    -webkit-font-smoothing: antialiased;
   }
   html {
     @apply font-sans antialiased;
   }
-  h1, h2, h3 {
+  h1, h2, h3, h4, h5, h6 {
     @apply text-gray-900 dark:text-gray-100 font-bold;
+  }
+}
+
+/* ── Ecme Component System Utilities ─────────────────────────────────────── */
+@layer components {
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl transition-all;
+  }
+  .card-border {
+    @apply border border-gray-200 dark:border-gray-700/80;
+  }
+  .card-shadow {
+    @apply shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.06)] dark:shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.3)];
+  }
+  .card-header {
+    @apply py-3.5 px-5 flex items-center justify-between;
+  }
+  .card-header-border {
+    @apply border-b border-gray-200 dark:border-gray-700/80 rounded-t-2xl;
+  }
+  .card-body {
+    @apply p-5;
+  }
+  .card-footer {
+    @apply py-3 px-5 rounded-b-2xl;
+  }
+  .card-footer-border {
+    @apply border-t border-gray-200 dark:border-gray-700/80;
+  }
+
+  /* Buttons */
+  .button {
+    @apply font-bold outline-none whitespace-nowrap inline-flex items-center justify-center transition-all duration-150 cursor-pointer;
+  }
+  .button-press-feedback {
+    @apply transition-transform active:scale-[0.98];
+  }
+  .button-solid {
+    @apply bg-primary hover:bg-primary-mild text-white shadow-xs;
+  }
+  .button-default {
+    @apply bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-primary hover:text-primary dark:hover:border-primary dark:hover:text-primary;
+  }
+  .button-plain {
+    @apply text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700/50;
+  }
+
+  /* Inputs & Forms */
+  .input {
+    @apply border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 rounded-xl w-full py-2 px-3 text-sm text-gray-900 dark:text-gray-100 font-semibold focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition duration-150;
+  }
+  .input::placeholder {
+    @apply text-gray-400 font-normal;
+  }
+  .input-addon {
+    @apply flex items-center px-3.5 rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-700 text-gray-500 text-sm;
+  }
+  .input-wrapper {
+    @apply relative w-full flex items-center;
+  }
+
+  /* Dialogs / Modals */
+  .dialog-overlay {
+    @apply fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6;
+  }
+  .dialog-content {
+    @apply relative w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl p-6 overflow-hidden;
+  }
+
+  /* Tables */
+  .table-default {
+    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs;
+  }
+  .table-default thead th {
+    @apply px-4 py-3 text-left font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/60;
+  }
+  .table-default tbody tr {
+    @apply divide-y divide-gray-200 dark:divide-gray-700 hover:bg-gray-50/60 dark:hover:bg-gray-700/30 transition-colors;
+  }
+  .table-default tbody td {
+    @apply px-4 py-3.5 text-gray-700 dark:text-gray-200 font-medium;
+  }
+
+  /* Tags & Badges */
+  .tag {
+    @apply rounded-lg py-1 px-2.5 border items-center inline-flex text-xs font-semibold whitespace-nowrap;
+  }
+  .tag-affix {
+    @apply h-2 w-2 rounded-full mr-1.5;
+  }
+
+  /* SideNav & Header */
+  .side-nav {
+    @apply flex flex-col flex-shrink-0 z-20 transition-all ease-in-out duration-200 sticky top-0 h-screen print:hidden;
+  }
+  .side-nav-content {
+    @apply h-[calc(100vh-4rem)] overflow-y-auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .side-nav-content::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  .side-nav-bg {
+    @apply border-r bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700;
+  }
+  .header {
+    @apply bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex z-30 sticky top-0 w-full h-16 print:hidden;
+  }
+  .header-wrapper {
+    @apply flex relative items-center justify-between px-6 w-full;
+  }
+  .header-action {
+    @apply flex items-center gap-2;
+  }
+  .header-action-item {
+    @apply cursor-pointer p-2 rounded-xl text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700/60 transition-colors duration-150;
   }
 }
