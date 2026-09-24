@@ -314,31 +314,93 @@ export default function InteractiveMapViewer({
         data: initialData,
       });
 
-      // Layer 1: Semi-transparent Fill
-      const lstOpacity = ((layerOpacities['lst'] ?? 80) / 100) * 0.65;
+      // Layer 1: Ground Surface Heat (LST) Thermal Gradient
+      const lstOpacity = activeLayers['lst'] ? ((layerOpacities['lst'] ?? 80) / 100) * 0.65 : 0;
       map.addLayer({
         id: 'thermal-sectors-fill',
         type: 'fill',
         source: 'thermal-sectors',
         paint: {
           'fill-color': [
-            'match',
-            ['get', 'heat_risk'],
-            'Critical',
-            '#ef4444',
-            'High',
-            '#fb732c',
-            'Moderate',
-            '#f59e0b',
-            'Low',
-            '#10b981',
-            '#38bdf8',
+            'interpolate',
+            ['linear'],
+            ['get', 'lst'],
+            28, '#38bdf8',
+            33, '#34d399',
+            36, '#fde047',
+            39, '#fb923c',
+            42, '#ef4444',
           ],
-          'fill-opacity': activeLayers['lst'] ? lstOpacity : 0.05,
+          'fill-opacity': lstOpacity,
         },
       });
 
-      // Layer 2: Neon Sector Perimeter Line
+      // Layer 2: Greenery & Canopy (NDVI) Vegetation Proxy
+      const ndviOpacity = activeLayers['ndvi'] ? ((layerOpacities['ndvi'] ?? 80) / 100) * 0.65 : 0;
+      map.addLayer({
+        id: 'canopy-ndvi-fill',
+        type: 'fill',
+        source: 'thermal-sectors',
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'ndvi'],
+            0.08, 'rgba(253, 224, 71, 0.25)',
+            0.18, '#86efac',
+            0.32, '#22c55e',
+            0.50, '#15803d',
+          ],
+          'fill-opacity': ndviOpacity,
+        },
+      });
+
+      // Layer 3: Built Massing & Urban Morphology Density
+      const landUseOpacity = activeLayers['land_use'] ? ((layerOpacities['land_use'] ?? 60) / 100) * 0.60 : 0;
+      map.addLayer({
+        id: 'landuse-morphology-fill',
+        type: 'fill',
+        source: 'thermal-sectors',
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'building_density'],
+            0.15, '#94a3b8',
+            0.45, '#64748b',
+            0.70, '#6366f1',
+            0.90, '#4338ca',
+          ],
+          'fill-opacity': landUseOpacity,
+        },
+      });
+
+      // Layer 4: Priority Heat Risk Hazard Overlay (Critical & High alert zones)
+      map.addLayer({
+        id: 'heat-risk-highlight',
+        type: 'fill',
+        source: 'thermal-sectors',
+        paint: {
+          'fill-color': [
+            'match',
+            ['get', 'heat_risk'],
+            'Critical', '#ef4444',
+            'High', '#f97316',
+            'rgba(0,0,0,0)',
+          ],
+          'fill-opacity': activeLayers['heat_risk']
+            ? [
+                'match',
+                ['get', 'heat_risk'],
+                'Critical', 0.45,
+                'High', 0.30,
+                0,
+              ]
+            : 0,
+        },
+      });
+
+      // Layer 5: Sector Perimeter Line with Adaptive Risk Accent
       map.addLayer({
         id: 'thermal-sectors-line',
         type: 'line',
@@ -347,43 +409,76 @@ export default function InteractiveMapViewer({
           'line-color': [
             'match',
             ['get', 'heat_risk'],
-            'Critical',
-            '#fca5a5',
-            'High',
-            '#fdba74',
-            'Moderate',
-            '#fde68a',
-            'Low',
-            '#6ee7b7',
-            '#ffffff',
+            'Critical', '#ef4444',
+            'High', '#f97316',
+            'Moderate', '#f59e0b',
+            'Low', '#10b981',
+            '#94a3b8',
           ],
-          'line-width': 2.2,
-          'line-opacity': activeLayers['heat_risk'] ? 0.9 : 0.2,
+          'line-width': activeLayers['heat_risk']
+            ? [
+                'match',
+                ['get', 'heat_risk'],
+                'Critical', 3.0,
+                'High', 2.2,
+                1.2,
+              ]
+            : 1.2,
+          'line-opacity': activeLayers['heat_risk'] ? 0.95 : (activeLayers['lst'] || activeLayers['ndvi'] || activeLayers['land_use'] ? 0.35 : 0),
         },
       });
 
-      // Sector Hover Cursor
-      map.on('mouseenter', 'thermal-sectors-fill', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', 'thermal-sectors-fill', () => {
-        map.getCanvas().style.cursor = '';
-      });
-
-      // Sector Click Inspector
-      map.on('click', 'thermal-sectors-fill', (e) => {
-        if (!e.features || !e.features[0]) return;
-        const props = e.features[0].properties as SectorProperties;
-        if (props) {
-          setActiveSector({
-            ...props,
-            primary_factors: Array.isArray(props.primary_factors)
-              ? props.primary_factors
-              : typeof props.primary_factors === 'string'
-              ? JSON.parse(props.primary_factors)
-              : [],
+      // Optional 3D Building Extrusion from vector tiles if available
+      try {
+        if (map.getSource('composite') && !map.getLayer('3d-buildings-extrusion')) {
+          map.addLayer({
+            id: '3d-buildings-extrusion',
+            source: 'composite',
+            'source-layer': 'building',
+            filter: ['==', 'extrude', 'true'],
+            type: 'fill-extrusion',
+            minzoom: 13,
+            paint: {
+              'fill-extrusion-color': '#e2e8f0',
+              'fill-extrusion-height': ['get', 'height'],
+              'fill-extrusion-base': ['get', 'min_height'],
+              'fill-extrusion-opacity': activeLayers['land_use'] ? 0.75 : 0,
+            },
           });
         }
+      } catch (err) {
+        // Non-blocking if vector style doesn't expose composite building layer
+      }
+
+      // Universal Sector Hover & Click Inspectors across all active fill layers
+      const interactiveLayers = [
+        'thermal-sectors-fill',
+        'canopy-ndvi-fill',
+        'landuse-morphology-fill',
+        'heat-risk-highlight',
+      ];
+
+      interactiveLayers.forEach((layerId) => {
+        map.on('mouseenter', layerId, () => {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', layerId, () => {
+          map.getCanvas().style.cursor = '';
+        });
+        map.on('click', layerId, (e) => {
+          if (!e.features || !e.features[0]) return;
+          const props = e.features[0].properties as SectorProperties;
+          if (props) {
+            setActiveSector({
+              ...props,
+              primary_factors: Array.isArray(props.primary_factors)
+                ? props.primary_factors
+                : typeof props.primary_factors === 'string'
+                ? JSON.parse(props.primary_factors)
+                : [],
+            });
+          }
+        });
       });
     });
 
@@ -443,20 +538,62 @@ export default function InteractiveMapViewer({
     if (!mapRef.current || !isMapLoaded) return;
     const map = mapRef.current;
 
-    const lstOpacity = ((layerOpacities['lst'] ?? 80) / 100) * 0.65;
+    // 1. Ground Surface Heat (LST)
+    const lstOpacity = activeLayers['lst'] ? ((layerOpacities['lst'] ?? 80) / 100) * 0.65 : 0;
     if (map.getLayer('thermal-sectors-fill')) {
+      map.setPaintProperty('thermal-sectors-fill', 'fill-opacity', lstOpacity);
+    }
+
+    // 2. Greenery & Canopy (NDVI)
+    const ndviOpacity = activeLayers['ndvi'] ? ((layerOpacities['ndvi'] ?? 80) / 100) * 0.65 : 0;
+    if (map.getLayer('canopy-ndvi-fill')) {
+      map.setPaintProperty('canopy-ndvi-fill', 'fill-opacity', ndviOpacity);
+    }
+
+    // 3. Buildings & Roads (Land Use Morphology)
+    const landUseOpacity = activeLayers['land_use'] ? ((layerOpacities['land_use'] ?? 60) / 100) * 0.60 : 0;
+    if (map.getLayer('landuse-morphology-fill')) {
+      map.setPaintProperty('landuse-morphology-fill', 'fill-opacity', landUseOpacity);
+    }
+    if (map.getLayer('3d-buildings-extrusion')) {
+      map.setPaintProperty('3d-buildings-extrusion', 'fill-extrusion-opacity', activeLayers['land_use'] ? 0.75 : 0);
+    }
+
+    // 4. Priority Heat Risk Hazard Overlay
+    if (map.getLayer('heat-risk-highlight')) {
       map.setPaintProperty(
-        'thermal-sectors-fill',
+        'heat-risk-highlight',
         'fill-opacity',
-        activeLayers['lst'] ? lstOpacity : 0.05
+        activeLayers['heat_risk']
+          ? [
+              'match',
+              ['get', 'heat_risk'],
+              'Critical', 0.45,
+              'High', 0.30,
+              0,
+            ]
+          : 0
       );
     }
 
+    // 5. Perimeter Line
+    const lineOpacity = activeLayers['heat_risk']
+      ? 0.95
+      : (activeLayers['lst'] || activeLayers['ndvi'] || activeLayers['land_use'] ? 0.35 : 0);
     if (map.getLayer('thermal-sectors-line')) {
+      map.setPaintProperty('thermal-sectors-line', 'line-opacity', lineOpacity);
       map.setPaintProperty(
         'thermal-sectors-line',
-        'line-opacity',
-        activeLayers['heat_risk'] ? 0.9 : 0.2
+        'line-width',
+        activeLayers['heat_risk']
+          ? [
+              'match',
+              ['get', 'heat_risk'],
+              'Critical', 3.0,
+              'High', 2.2,
+              1.2,
+            ]
+          : 1.2
       );
     }
   }, [activeLayers, layerOpacities, isMapLoaded]);
@@ -598,22 +735,94 @@ export default function InteractiveMapViewer({
         </button>
       </div>
 
-      {/* Right-Side Thermal Gradient Scale Legend (Docked cleanly below map zoom tools) */}
-      <div className="absolute top-48 right-4 z-20 pointer-events-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl px-3.5 py-2.5 shadow-xl flex flex-col gap-1.5 select-none max-w-[240px]">
-        <div className="flex justify-between items-center text-[10px] font-medium text-gray-600 dark:text-gray-400">
-          <span>Heat Scale</span>
-          <span className="text-gray-900 dark:text-gray-100 font-bold ml-3">28°C to 44°C</span>
-        </div>
-        <div className="w-full h-2 rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-red-500 shadow-inner" />
-        <div className="flex justify-between text-[9px] text-gray-500 dark:text-gray-400 font-medium">
-          <span>Cooler Area</span>
-          <span>Moderate</span>
-          <span>High Heat Zone</span>
-        </div>
+      {/* Dynamic Multi-Layer Legend (Docked cleanly below map zoom tools) */}
+      <div className="absolute top-48 right-4 z-20 pointer-events-auto bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl p-3 shadow-xl flex flex-col gap-2 select-none w-60 max-w-[90vw]">
+        {/* Ground Surface Heat Legend */}
+        {activeLayers['lst'] && (
+          <div className="space-y-1">
+            <div className="flex justify-between items-center text-[10px] font-semibold text-gray-700 dark:text-gray-300">
+              <span className="flex items-center gap-1.5">
+                <Thermometer className="w-3 h-3 text-red-500" />
+                <span>Surface Heat</span>
+              </span>
+              <span className="text-primary font-mono text-[10px]">28°C to 44°C</span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-gradient-to-r from-sky-400 via-amber-400 to-red-500 shadow-inner" />
+            <div className="flex justify-between text-[8.5px] text-gray-500 dark:text-gray-400 font-medium">
+              <span>Cooler</span>
+              <span>Moderate</span>
+              <span>Extreme</span>
+            </div>
+          </div>
+        )}
+
+        {/* Greenery & Trees Legend */}
+        {activeLayers['ndvi'] && (
+          <div className={`space-y-1 ${activeLayers['lst'] ? 'border-t border-gray-100 dark:border-gray-700/60 pt-1.5' : ''}`}>
+            <div className="flex justify-between items-center text-[10px] font-semibold text-gray-700 dark:text-gray-300">
+              <span className="flex items-center gap-1.5">
+                <Leaf className="w-3 h-3 text-emerald-500" />
+                <span>Greenery (NDVI)</span>
+              </span>
+              <span className="text-emerald-500 font-mono text-[10px]">0.08 to 0.70</span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-gradient-to-r from-lime-200 via-emerald-500 to-emerald-900 shadow-inner" />
+            <div className="flex justify-between text-[8.5px] text-gray-500 dark:text-gray-400 font-medium">
+              <span>Sparse</span>
+              <span>Moderate Canopy</span>
+              <span>Dense Park</span>
+            </div>
+          </div>
+        )}
+
+        {/* Buildings & Roads Legend */}
+        {activeLayers['land_use'] && (
+          <div className={`space-y-1 ${(activeLayers['lst'] || activeLayers['ndvi']) ? 'border-t border-gray-100 dark:border-gray-700/60 pt-1.5' : ''}`}>
+            <div className="flex justify-between items-center text-[10px] font-semibold text-gray-700 dark:text-gray-300">
+              <span className="flex items-center gap-1.5">
+                <Building className="w-3 h-3 text-indigo-500" />
+                <span>Built Mass Density</span>
+              </span>
+              <span className="text-indigo-500 font-mono text-[10px]">10% to 90%</span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-gradient-to-r from-slate-300 via-indigo-400 to-indigo-800 shadow-inner" />
+            <div className="flex justify-between text-[8.5px] text-gray-500 dark:text-gray-400 font-medium">
+              <span>Low Built</span>
+              <span>Medium</span>
+              <span>High Impervious</span>
+            </div>
+          </div>
+        )}
+
+        {/* Heat Risk Areas Legend */}
+        {activeLayers['heat_risk'] && (
+          <div className={`space-y-1 ${(activeLayers['lst'] || activeLayers['ndvi'] || activeLayers['land_use']) ? 'border-t border-gray-100 dark:border-gray-700/60 pt-1.5' : ''}`}>
+            <div className="flex justify-between items-center text-[10px] font-semibold text-gray-700 dark:text-gray-300">
+              <span className="flex items-center gap-1.5">
+                <AlertTriangle className="w-3 h-3 text-amber-500" />
+                <span>Risk Priority Zones</span>
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-1 text-center text-[8px] font-bold">
+              <span className="py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">Low</span>
+              <span className="py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">Mod</span>
+              <span className="py-0.5 rounded bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/30">High</span>
+              <span className="py-0.5 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">Crit</span>
+            </div>
+          </div>
+        )}
+
+        {/* Fallback if all layers are toggled off */}
+        {!activeLayers['lst'] && !activeLayers['ndvi'] && !activeLayers['land_use'] && !activeLayers['heat_risk'] && (
+          <div className="text-[10px] text-gray-400 italic py-1 text-center">
+            All map overlays hidden. Toggle any layer in the left sidebar.
+          </div>
+        )}
+
         <div className="border-t border-gray-200 dark:border-gray-700/80 pt-1 mt-0.5">
           <span className="text-[9px] text-gray-500 dark:text-gray-400 font-mono block">25 spatial model sectors</span>
           <span className="text-[8.5px] text-gray-400 dark:text-gray-500 leading-tight block">
-            Sector values are spatialized from the central live analysis using the UrbanChill spatial model.
+            Click any sector to inspect microclimate variables and send alert broadcasts.
           </span>
         </div>
       </div>
